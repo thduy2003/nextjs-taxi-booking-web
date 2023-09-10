@@ -3,6 +3,7 @@ import "./globals.css";
 import type { Metadata } from "next";
 import { Inter, Outfit } from "next/font/google";
 import { ClerkProvider } from "@clerk/nextjs";
+import AppWrapper from "@/context/AppContext";
 
 const outfit = Outfit({ subsets: ["latin"] });
 
@@ -18,12 +19,14 @@ export default function RootLayout({
 }) {
   return (
     <ClerkProvider>
-      <html lang='en'>
-        <body className={outfit.className}>
-          <Navbar />
-          {children}
-        </body>
-      </html>
+      <AppWrapper>
+        <html lang='en'>
+          <body className={outfit.className}>
+            <Navbar />
+            {children}
+          </body>
+        </html>
+      </AppWrapper>
     </ClerkProvider>
   );
 }

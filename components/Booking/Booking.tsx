@@ -1,13 +1,15 @@
 "use client";
 import React from "react";
 import AutocompleteAddress from "./AutocompleteAddress";
+import Cars from "./Cars";
+import Cards from "./Cards";
 
 const Booking = () => {
-  // nhân cho 0.72 để khỏi phải scroll
+  // nhân cho 0.82 để khỏi phải scroll
   const [screenHeight, setScreenHeight] = React.useState<number>();
   React.useEffect(() => {
     if (typeof window !== "undefined") {
-      setScreenHeight(window.innerHeight * 0.72);
+      setScreenHeight(window.innerHeight * 0.82);
     }
   }, []);
 
@@ -19,6 +21,11 @@ const Booking = () => {
         style={{ height: screenHeight }}
       >
         <AutocompleteAddress />
+        <Cars />
+        <Cards />
+        <button className='w-full bg-yellow-400 p-1 rounded-md mt-4'>
+          Book
+        </button>
       </div>
     </div>
   );

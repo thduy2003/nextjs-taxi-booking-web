@@ -1,15 +1,17 @@
+import { useAppContext } from "@/context/AppContext";
 import React from "react";
 const MAPBOX_RETRIVE_URL =
   "https://api.mapbox.com/search/searchbox/v1/retrieve/";
 const session_token = "09e03936-d506-4311-88a7-ad6adf20d6ed";
 const AutocompleteAddress = () => {
-  const [source, setSource] = React.useState<any>();
-  const [destination, setDestination] = React.useState<any>();
+  const [source, setSource] = React.useState<string>("");
+  const [destination, setDestination] = React.useState<string>("");
   const [sourceChange, setSourceChange] = React.useState<boolean>(false);
   const [destinationChange, setDestinationChange] =
     React.useState<boolean>(false);
   //mặc dù biết thằng này trả về object nhưng cứ đưa vô mảng để xóa cho dễ, xóa chỉ cần sét lại mảng rỗng là xong
   const [addressList, setAddressList] = React.useState<any>([]);
+  const { onChangeState } = useAppContext();
 
   //hàm lấy danh sách các địa chỉ được api trả về
   const getAddressList = async () => {
@@ -24,7 +26,7 @@ const AutocompleteAddress = () => {
     });
     const result = await res.json();
     // nếu mà lỡ search không có mảng thông tin nào trả về thì không hiện dropdown luôn nha
-    if (result?.data?.suggestions.length === 0) {
+    if (result?.data?.suggestions?.length === 0) {
       if (sourceChange) {
         setSourceChange(false);
       }
@@ -42,7 +44,7 @@ const AutocompleteAddress = () => {
     setAddressList([]);
     //chọn xong thì set lại sourceChange bằng false để tắt dropdown
     setSourceChange(false);
-    //chạy api để lấy thông tọa độ vị trí cụ thể đã được chọn
+    //chạy api để lấy thông tin tọa độ vị trí cụ thể đã được chọn
     const res = await fetch(
       MAPBOX_RETRIVE_URL +
         item.mapbox_id +
@@ -52,7 +54,13 @@ const AutocompleteAddress = () => {
         process.env.NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN
     );
     const result = await res.json();
-    console.log(result);
+    // kết quả trả về thông tin tọa độ vị trí chọn thì set tọa độ vô cho source
+    onChangeState({
+      sourceCordinates: {
+        lng: result.features[0].geometry.coordinates[0],
+        lat: result.features[0].geometry.coordinates[1],
+      },
+    });
   };
 
   //hàm xử lý khi chọn địa chỉ chi tiết destination
@@ -72,14 +80,18 @@ const AutocompleteAddress = () => {
         process.env.NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN
     );
     const result = await res.json();
-    console.log(result);
+    onChangeState({
+      destinationCordinates: {
+        lng: result.features[0].geometry.coordinates[0],
+        lat: result.features[0].geometry.coordinates[1],
+      },
+    });
   };
 
   //mỗi khi thay đổi text source hoặc destination thì chạy lại hàm lấy danh sách địa chỉ
   React.useEffect(() => {
     //chờ sau 1s sau khi nhập mới chạy
     const delayDebounceFn = setTimeout(() => {
-      console.log("hehehe");
       getAddressList();
     }, 500);
     return () => clearTimeout(delayDebounceFn);
@@ -93,6 +105,7 @@ const AutocompleteAddress = () => {
         </label>
         <input
           type='text'
+          value={source}
           className='outline-none w-full border-[1px] mt-2 rounded-md p-1 bg-white focus:border-yellow-300 '
           onChange={(e) => {
             setSource(e.target.value);
@@ -128,6 +141,7 @@ const AutocompleteAddress = () => {
         </label>
         <input
           type='text'
+          value={destination}
           className='outline-none w-full border-[1px] mt-2 rounded-md p-1 bg-white focus:border-yellow-300 '
           onChange={(e) => {
             setDestination(e.target.value);

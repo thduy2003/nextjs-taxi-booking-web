@@ -2,8 +2,16 @@ import CarsList from "@/data/CarsList";
 import { CarItem } from "@/interfaces/carItem.type";
 import React from "react";
 import Image from "next/image";
+import { useAppContext } from "@/context/AppContext";
 const Cars = () => {
   const [selectedCar, setSelectedCar] = React.useState<number>();
+  const { directionData } = useAppContext();
+  const getCost = (charges: number) => {
+    return (
+      charges *
+      (directionData.routes[0].distance * 0.000621371192)
+    ).toFixed(2);
+  };
   return (
     <div className='mt-3'>
       <h2 className='font-semibold'>Select Car</h2>
@@ -25,7 +33,9 @@ const Cars = () => {
             />
             <div className='flex justify-between items-center flex-1'>
               <h2 className='text-[10px] text-gray-500'>{item.name}</h2>
-              <span className=''>{item.charges}$</span>
+              {directionData?.routes ? (
+                <span className=''>{getCost(item.charges)}$</span>
+              ) : null}
             </div>
           </div>
         ))}

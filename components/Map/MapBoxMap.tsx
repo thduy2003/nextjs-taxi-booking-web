@@ -5,6 +5,7 @@ import Map from "react-map-gl";
 import Markers from "./Markers";
 import "mapbox-gl/dist/mapbox-gl.css";
 import MapBoxRoute from "./MapBoxRoute";
+import DistanceTime from "./DistanceTime";
 const MAPBOX_DRIVING_ENDPOINT =
   "https://api.mapbox.com/directions/v5/mapbox/driving/";
 const MapBoxMap = () => {
@@ -104,6 +105,10 @@ const MapBoxMap = () => {
             ) : null}
           </Map>
         ) : null}
+      </div>
+      <div className='absolute bottom-[50px] z-20 right-[20px] hidden md:block'>
+        {" "}
+        {directionData?.routes ? <DistanceTime /> : null}
       </div>
     </div>
   );
